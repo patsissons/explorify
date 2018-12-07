@@ -4,10 +4,21 @@ import { compose, lifecycle, withProps } from "recompose";
 import { CreateVoyager, VoyagerConfig } from "datavoyager";
 import { Data, DataFormat } from "vega-lite";
 
+import { TestLoader } from "./components";
+
 import "datavoyager/build/style.css";
 import "./Voyager.css";
 
-export const defaultConfig: VoyagerConfig = {};
+export const defaultConfig: VoyagerConfig = {
+  renderCustomDataSelectorTabs(loader) {
+    return [
+      {
+        name: "testing",
+        panel: <TestLoader loader={loader} />
+      }
+    ];
+  }
+};
 
 export interface Props {
   config?: VoyagerConfig;
