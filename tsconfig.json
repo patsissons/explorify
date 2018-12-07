@@ -19,6 +19,7 @@
     "importHelpers": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
+    "resolveJsonModule": true,
     "noUnusedLocals": true,
     "paths": {
       "*": ["./src/types/*"]

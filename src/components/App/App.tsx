@@ -1,8 +1,14 @@
 import * as React from "react";
 
-import { Frame, Navigation, SkeletonPage, Toast } from "@shopify/polaris";
+import {
+  Frame,
+  Navigation,
+  SkeletonPage,
+  Toast,
+  TopBar
+} from "@shopify/polaris";
 import { Voyager } from "datavoyager";
-// import logo from "datavoyager/images/logo.png";
+import logo from "datavoyager/images/logo.png";
 
 import { DataLoader, DataLoaderType, VoyagerContainer } from "./components";
 
@@ -40,9 +46,11 @@ export class App extends React.PureComponent<{}, State> {
       </Navigation>
     );
 
+    const topBar = <TopBar />;
+
     return (
       <div className="App">
-        <Frame navigation={navigation}>
+        <Frame navigation={navigation} topBar={topBar}>
           {!voyager && <SkeletonPage title="Loading Voyager..." />}
           <VoyagerContainer onMounted={this.onVoyagerMounted} />
           <DataLoader
@@ -94,5 +102,19 @@ export class App extends React.PureComponent<{}, State> {
     this.setState({ toastContent: content, toastIsError: isError });
   };
 }
+
+export const theme = {
+  colors: {
+    topBar: {
+      background: "#f4f6f8",
+      backgroundDarker: "#C4CDD5",
+      backgroundLighter: "#F9FAFB"
+    }
+  },
+  logo: {
+    topBarSource: logo,
+    width: 174
+  }
+};
 
 export default App;

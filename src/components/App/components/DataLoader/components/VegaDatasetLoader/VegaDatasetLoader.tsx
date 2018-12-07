@@ -10,7 +10,7 @@ export interface Props extends DataLoaderMountedProps {}
 type ComposedProps = Props;
 
 interface State {
-  source?: string;
+  source: string;
 }
 
 export class VegaDatasetLoader extends React.PureComponent<
@@ -23,6 +23,12 @@ export class VegaDatasetLoader extends React.PureComponent<
   }));
 
   state: State = { source: this.options[0].value };
+
+  componentDidMount() {
+    const { onMounted } = this.props;
+
+    onMounted(this.dataLoader);
+  }
 
   render() {
     const { source } = this.state;
@@ -39,19 +45,8 @@ export class VegaDatasetLoader extends React.PureComponent<
     );
   }
 
-  componentDidMount() {
-    const { onMounted } = this.props;
-
-    onMounted(this.dataLoader);
-  }
-
   dataLoader: DataLoaderFunction = async () => {
     const { source } = this.state;
-
-    if (!source) {
-      throw new Error("No data source selected");
-    }
-
     const uri = dataSources[source];
 
     if (!uri) {

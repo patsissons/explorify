@@ -5,10 +5,12 @@ import { Modal, FormLayout, TextField } from "@shopify/polaris";
 import {
   DataLoaderFunction,
   TestDataLoader,
-  VegaDatasetLoader
+  VegaDatasetLoader,
+  GraphQLLoader
 } from "./components";
 
 export enum DataLoaderType {
+  GraphQL = "GraphQL",
   Test = "Test",
   VegaDatasets = "Vega Datasets"
 }
@@ -57,6 +59,9 @@ export class DataLoader extends React.PureComponent<ComposedProps, State> {
   renderLoader() {
     const { type } = this.props;
     switch (type) {
+      case DataLoaderType.GraphQL:
+        return <GraphQLLoader onMounted={this.onMounted} />;
+
       case DataLoaderType.Test:
         return <TestDataLoader onMounted={this.onMounted} />;
 
