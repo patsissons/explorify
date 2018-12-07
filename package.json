@@ -6,10 +6,10 @@
     "start": "react-scripts-ts start",
     "build": "react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject",
-    "open": "open http://localhost:3000/?url=https://raw.githubusercontent.com/vega/vega-datasets/gh-pages/data/movies.json&format=json"
+    "eject": "react-scripts-ts eject"
   },
   "dependencies": {
+    "@shopify/polaris": "^3.2.1",
     "datavoyager": "^2.0.0-alpha.24",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
