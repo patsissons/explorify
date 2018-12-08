@@ -16,6 +16,7 @@ import "./App.css";
 
 interface State {
   dataLoaderType?: DataLoaderType;
+  isMobileNavVisible?: boolean;
   toastContent?: string;
   toastIsError?: boolean;
   voyager?: Voyager;
@@ -34,23 +35,35 @@ export class App extends React.PureComponent<{}, State> {
   });
 
   render() {
-    const { dataLoaderType, toastContent, toastIsError, voyager } = this.state;
+    const {
+      dataLoaderType,
+      isMobileNavVisible,
+      toastContent,
+      toastIsError,
+      voyager
+    } = this.state;
 
     const navigation = voyager && (
       <Navigation location="/">
-        <Navigation.Section
-          title="Load Data Source"
-          icon="import"
-          items={this.navItems}
-        />
+        <Navigation.Section title="Load Data Source" items={this.navItems} />
       </Navigation>
     );
 
-    const topBar = <TopBar />;
+    const topBar = (
+      <TopBar
+        showNavigationToggle={true}
+        onNavigationToggle={this.toggleNavigation}
+      />
+    );
 
     return (
       <div className="App">
-        <Frame navigation={navigation} topBar={topBar}>
+        <Frame
+          navigation={navigation}
+          topBar={topBar}
+          showMobileNavigation={isMobileNavVisible}
+          onNavigationDismiss={this.dismissNavigation}
+        >
           {!voyager && <SkeletonPage title="Loading Voyager..." />}
           <VoyagerContainer onMounted={this.onVoyagerMounted} />
           <DataLoader
@@ -74,6 +87,10 @@ export class App extends React.PureComponent<{}, State> {
     this.setState({ dataLoaderType: undefined });
   };
 
+  dismissNavigation = () => {
+    this.setState({ isMobileNavVisible: false });
+  };
+
   dismissToast = () => {
     this.setState({ toastContent: undefined, toastIsError: undefined });
   };
@@ -86,6 +103,7 @@ export class App extends React.PureComponent<{}, State> {
       voyager.updateData({ values: data });
 
       this.dismissModal();
+      this.dismissNavigation();
       this.showToast(`Data Loaded: ${name}`);
     }
   };
@@ -101,12 +119,18 @@ export class App extends React.PureComponent<{}, State> {
   showToast = (content: string, isError?: boolean) => {
     this.setState({ toastContent: content, toastIsError: isError });
   };
+
+  toggleNavigation = () => {
+    const { isMobileNavVisible } = this.state;
+
+    this.setState({ isMobileNavVisible: !Boolean(isMobileNavVisible) });
+  };
 }
 
 export const theme = {
   colors: {
     topBar: {
-      background: "#f4f6f8",
+      background: "#C4CDD5",
       backgroundDarker: "#C4CDD5",
       backgroundLighter: "#F9FAFB"
     }
