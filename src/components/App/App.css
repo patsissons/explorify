@@ -3,3 +3,19 @@
   padding: 0;
   height: 100%;
 }
+
+/* .App .voyager {
+  display: none;
+} */
+
+.App.HideDataPane .voyager > .SplitPane > .Pane1 {
+  display: none;
+}
+
+.App.HideEncodingPane .voyager > .SplitPane > .Pane2 > .SplitPane > .Pane1 {
+  display: none;
+}
+
+/* .App.DataPaneVisible .Panel1 {
+  display: initial;
+} */

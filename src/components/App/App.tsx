@@ -7,6 +7,7 @@ import {
   Toast,
   TopBar
 } from "@shopify/polaris";
+import classNames from "classnames";
 import { Voyager } from "datavoyager";
 import logo from "datavoyager/images/logo.png";
 
@@ -16,6 +17,8 @@ import "./App.css";
 
 interface State {
   dataLoaderType?: DataLoaderType;
+  isDataPaneHidden?: boolean;
+  isEncodingPaneHidden?: boolean;
   isMobileNavVisible?: boolean;
   toastContent?: string;
   toastIsError?: boolean;
@@ -25,7 +28,7 @@ interface State {
 export class App extends React.PureComponent<{}, State> {
   state: State = {};
 
-  private readonly navItems = Object.keys(DataLoaderType).map(key => {
+  private readonly dataSourceItems = Object.keys(DataLoaderType).map(key => {
     return {
       label: DataLoaderType[key],
       onClick: () => {
@@ -37,6 +40,8 @@ export class App extends React.PureComponent<{}, State> {
   render() {
     const {
       dataLoaderType,
+      isDataPaneHidden,
+      isEncodingPaneHidden,
       isMobileNavVisible,
       toastContent,
       toastIsError,
@@ -45,7 +50,30 @@ export class App extends React.PureComponent<{}, State> {
 
     const navigation = voyager && (
       <Navigation location="/">
-        <Navigation.Section title="Load Data Source" items={this.navItems} />
+        <Navigation.Section
+          title="Load Data Source"
+          items={this.dataSourceItems}
+        />
+        <Navigation.Section
+          title="Options"
+          icon="cog"
+          items={[
+            {
+              label: isDataPaneHidden ? "Show Data Pane" : "Hide Data Pane",
+              onClick: () => {
+                this.toggleDataPane();
+              }
+            },
+            {
+              label: isEncodingPaneHidden
+                ? "Show Encoding Pane"
+                : "Hide Encoding Pane",
+              onClick: () => {
+                this.toggleEncodingPane();
+              }
+            }
+          ]}
+        />
       </Navigation>
     );
 
@@ -57,7 +85,12 @@ export class App extends React.PureComponent<{}, State> {
     );
 
     return (
-      <div className="App">
+      <div
+        className={classNames("App", {
+          HideDataPane: isDataPaneHidden,
+          HideEncodingPane: isEncodingPaneHidden
+        })}
+      >
         <Frame
           navigation={navigation}
           topBar={topBar}
@@ -118,6 +151,18 @@ export class App extends React.PureComponent<{}, State> {
 
   showToast = (content: string, isError?: boolean) => {
     this.setState({ toastContent: content, toastIsError: isError });
+  };
+
+  toggleDataPane = () => {
+    const { isDataPaneHidden } = this.state;
+
+    this.setState({ isDataPaneHidden: !Boolean(isDataPaneHidden) });
+  };
+
+  toggleEncodingPane = () => {
+    const { isEncodingPaneHidden } = this.state;
+
+    this.setState({ isEncodingPaneHidden: !Boolean(isEncodingPaneHidden) });
   };
 
   toggleNavigation = () => {

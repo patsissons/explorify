@@ -1,19 +1,20 @@
 import * as React from "react";
 
-import { FormLayout, Select, TextField } from "@shopify/polaris";
+import { Button, FormLayout, Select, TextField } from "@shopify/polaris";
+import { graphqlLodash } from "graphql-lodash";
 import { request } from "graphql-request";
 
 import { DataLoaderFunction, DataLoaderMountedProps } from "../shared";
 import apis from "./apis.json";
-import { GraphQLApi } from "apis.json";
 
 export interface Props extends DataLoaderMountedProps {}
 
 type ComposedProps = Props;
 
 interface State {
-  query: string;
-  source: string;
+  query?: string;
+  endpoint?: string;
+  result?: string;
 }
 
 export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
@@ -22,8 +23,8 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
   );
 
   state: State = {
-    query: "",
-    source: ""
+    query: apis[0].sampleQuery,
+    endpoint: apis[0].url
   };
 
   componentDidMount() {
@@ -33,15 +34,20 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
   }
 
   render() {
-    const { query, source } = this.state;
+    const { query, endpoint, result } = this.state;
 
     return (
       <FormLayout>
         <Select
           label="Data Source"
           options={this.options}
-          onChange={this.setSource}
-          value={source}
+          onChange={this.setEndpoint}
+          value={endpoint}
+        />
+        <TextField
+          label="Endpoint"
+          value={endpoint}
+          onChange={this.setEndpoint}
         />
         <TextField
           label="Query"
@@ -49,71 +55,81 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
           onChange={this.setQuery}
           value={query}
         />
+        <Button onClick={this.previewResult}>Preview</Button>
+        {result && <pre>{result}</pre>}
       </FormLayout>
     );
   }
 
   dataLoader: DataLoaderFunction = async () => {
-    const { query, source } = this.state;
-    const values = await dataLoader(query, apis
-      .filter(({ url }) => url === source)
-      .shift() as any);
+    const { query, endpoint } = this.state;
+
+    if (!query || !endpoint) {
+      throw new Error("Invalid query or endpoint");
+    }
+
+    const api = apis.filter(({ url }) => url === endpoint).shift();
+    const values = await dataLoader(query, endpoint);
 
     return {
-      name: source,
+      name: api && api.info.title,
       values
     };
+  };
+
+  previewResult = async () => {
+    const { query, endpoint } = this.state;
+    try {
+      if (!query || !endpoint) {
+        throw new Error("Invalid query or endpoint");
+      }
+
+      const result = await dataLoader(query, endpoint);
+
+      this.setResult(JSON.stringify(result, null, 2));
+    } catch (e) {
+      this.setResult(e.toString());
+    }
   };
 
   setQuery = (query: string) => {
     this.setState({ query });
   };
 
-  setSource = (source: string) => {
-    this.setState({ source });
+  setEndpoint = (endpoint: string) => {
+    this.setState({ endpoint });
+
+    const api = apis.filter(({ url }) => url === endpoint).shift();
+
+    if (api && api.sampleQuery) {
+      this.setQuery(api.sampleQuery);
+    }
+  };
+
+  setResult = (result: string) => {
+    this.setState({ result });
   };
 }
 
-function findDataset(response: {} | undefined): {}[] | undefined {
-  if (!response) {
-    return undefined;
-  }
-
-  for (const item in response) {
-    if (Array.isArray(response[item])) {
-      return response[item];
-    }
-  }
-  for (const item in response) {
-    if (typeof response[item] === "object") {
-      const dataSet = findDataset(response[item]);
-
-      if (dataSet) {
-        return dataSet;
-      }
-    }
-  }
-
-  return undefined;
+interface Result {
+  values: any;
 }
 
 export async function dataLoader(
-  query: string,
-  source: GraphQLApi | undefined
+  lodashQuery: string,
+  endpoint: string | undefined
 ) {
-  if (!source) {
-    throw new Error("Invalid data source");
+  if (!endpoint) {
+    throw new Error("Invalid endpoint");
   }
 
-  const response = await request(source.url, query);
+  const { query, transform } = graphqlLodash(lodashQuery);
 
-  const data = findDataset(response);
+  const data = await request<Result>(endpoint, query);
 
-  if (!data) {
-    throw new Error("Invalid data response");
-  }
+  const { values } = transform<Result>(data);
 
-  return data;
+  return values;
 }
 
 // https://github.com/APIs-guru/graphql-apis

@@ -23,6 +23,7 @@ declare module "apis.json" {
         backgroundColor?: string;
       };
     };
+    sampleQuery?: string;
     externalDocs: GraphQLApiExternalDocs[];
     security?: GraphQLApiSecurity[];
   }

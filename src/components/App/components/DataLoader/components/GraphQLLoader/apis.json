@@ -1,5 +1,14 @@
 [
   {
+    "url": "https://swapi.apis.guru",
+    "info": {
+      "title": "SWAPI",
+      "description": "SWAPI"
+    },
+    "sampleQuery": "{\r\n  values: allPeople @_(get: \"people\")  {\r\n    people {\r\n      name\r\n      birthYear\r\n      eyeColor\r\n      gender\r\n      hairColor\r\n      mass\r\n      skinColor\r\n      homeworld @_(get: \"name\") {\r\n        name\r\n      }\r\n      species @_(get: \"name\") {\r\n        name\r\n      }\r\n      classification: species @_(get: \"classification\") {\r\n        classification\r\n      }\r\n      designation: species @_(get: \"designation\") {\r\n        designation\r\n      }\r\n      episode1: filmConnection @_(get: \"films.title\") {\r\n        films @_(filterIf: {get: \"episodeID\", eq: 1}, nth: 0) {\r\n          episodeID\r\n          title\r\n        }\r\n      }\r\n      episode2: filmConnection @_(get: \"films.title\") {\r\n        films @_(filterIf: {get: \"episodeID\", eq: 2}, nth: 0) {\r\n          episodeID\r\n          title\r\n        }\r\n      }\r\n      episode3: filmConnection @_(get: \"films.title\") {\r\n        films @_(filterIf: {get: \"episodeID\", eq: 3}, nth: 0) {\r\n          episodeID\r\n          title\r\n        }\r\n      }\r\n      episode4: filmConnection @_(get: \"films.title\") {\r\n        films @_(filterIf: {get: \"episodeID\", eq: 4}, nth: 0) {\r\n          episodeID\r\n          title\r\n        }\r\n      }\r\n      episode5: filmConnection @_(get: \"films.title\") {\r\n        films @_(filterIf: {get: \"episodeID\", eq: 5}, nth: 0) {\r\n          episodeID\r\n          title\r\n        }\r\n      }\r\n      episode6: filmConnection @_(get: \"films.title\") {\r\n        films @_(filterIf: {get: \"episodeID\", eq: 6}, nth: 0) {\r\n          episodeID\r\n          title\r\n        }\r\n      }\r\n      episode7: filmConnection @_(get: \"films.title\") {\r\n        films @_(filterIf: {get: \"episodeID\", eq: 7}, nth: 0) {\r\n          episodeID\r\n          title\r\n        }\r\n      }\r\n      episode8: filmConnection @_(get: \"films.title\") {\r\n        films @_(filterIf: {get: \"episodeID\", eq: 8}, nth: 0) {\r\n          episodeID\r\n          title\r\n        }\r\n      }\r\n      episode9: filmConnection @_(get: \"films.title\") {\r\n        films @_(filterIf: {get: \"episodeID\", eq: 9}, nth: 0) {\r\n          episodeID\r\n          title\r\n        }\r\n      }\r\n    }\r\n  }\r\n}",
+    "externalDocs": []
+  },
+  {
     "url": "https://graphql.brandfolder.com/graphql",
     "info": {
       "title": "Brandfolder",
