@@ -28,14 +28,22 @@ interface State {
 export class App extends React.PureComponent<{}, State> {
   state: State = {};
 
-  private readonly dataSourceItems = Object.keys(DataLoaderType).map(key => {
-    return {
-      label: DataLoaderType[key],
-      onClick: () => {
-        this.showDataLoader(DataLoaderType[key]);
+  private readonly dataSourceItems = Object.keys(DataLoaderType)
+    .filter(type => {
+      if (type === DataLoaderType.Test) {
+        return Boolean(process.env.SHOW_TEST_LOADER);
       }
-    };
-  });
+
+      return true;
+    })
+    .map(key => {
+      return {
+        label: DataLoaderType[key],
+        onClick: () => {
+          this.showDataLoader(DataLoaderType[key]);
+        }
+      };
+    });
 
   render() {
     const {
@@ -56,7 +64,6 @@ export class App extends React.PureComponent<{}, State> {
         />
         <Navigation.Section
           title="Options"
-          icon="cog"
           items={[
             {
               label: isDataPaneHidden ? "Show Data Pane" : "Hide Data Pane",

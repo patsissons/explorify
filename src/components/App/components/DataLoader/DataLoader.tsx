@@ -5,14 +5,14 @@ import { Modal, FormLayout, TextField } from "@shopify/polaris";
 import {
   DataLoaderFunction,
   TestDataLoader,
-  VegaDatasetLoader,
+  VegaLoader,
   GraphQLLoader
 } from "./components";
 
 export enum DataLoaderType {
   GraphQL = "GraphQL",
   Test = "Test",
-  VegaDatasets = "Vega Datasets"
+  Vega = "Vega (URL)"
 }
 
 export interface Props {
@@ -65,8 +65,8 @@ export class DataLoader extends React.PureComponent<ComposedProps, State> {
       case DataLoaderType.Test:
         return <TestDataLoader onMounted={this.onMounted} />;
 
-      case DataLoaderType.VegaDatasets:
-        return <VegaDatasetLoader onMounted={this.onMounted} />;
+      case DataLoaderType.Vega:
+        return <VegaLoader onMounted={this.onMounted} />;
     }
 
     return false;
