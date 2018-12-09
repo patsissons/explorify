@@ -12,19 +12,23 @@ export interface Props extends DataLoaderMountedProps {}
 type ComposedProps = Props;
 
 interface State {
+  apiName?: string;
   query?: string;
   endpoint?: string;
   result?: string;
 }
 
 export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
-  private readonly options = apis.map(
-    ({ info: { title: label }, url: value }) => ({ label, value })
-  );
+  private readonly options = [
+    { label: "Custom", value: "Custom" },
+    ...apis.map(({ info: { title: value } }) => ({
+      label: value,
+      value
+    }))
+  ];
 
   state: State = {
-    query: apis[0].sampleQuery,
-    endpoint: apis[0].url
+    apiName: this.options[0].value
   };
 
   componentDidMount() {
@@ -34,15 +38,15 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
   }
 
   render() {
-    const { query, endpoint, result } = this.state;
+    const { apiName, query, endpoint, result } = this.state;
 
     return (
       <FormLayout>
         <Select
           label="Data Source"
           options={this.options}
-          onChange={this.setEndpoint}
-          value={endpoint}
+          onChange={this.setApiName}
+          value={apiName}
         />
         <TextField
           label="Endpoint"
@@ -89,6 +93,18 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
       this.setResult(JSON.stringify(result, null, 2));
     } catch (e) {
       this.setResult(e.toString());
+    }
+  };
+
+  setApiName = (apiName: string) => {
+    const api = apis.filter(({ info: { title } }) => title === apiName).shift();
+
+    if (api) {
+      const { url: endpoint = "", sampleQuery: query = "" } = api;
+
+      this.setState({ apiName, endpoint, query });
+    } else {
+      this.setState({ apiName, endpoint: "", query: "" });
     }
   };
 

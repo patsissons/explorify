@@ -40,7 +40,13 @@ export class VegaLoader extends React.PureComponent<ComposedProps, State> {
           value={sourceName}
         />
         <TextField label="URI" value={uri} onChange={this.setUri} />
-        <TextField label="type" value={type} onChange={this.setType} />
+        <TextField
+          label="type"
+          value={type}
+          onChange={this.setType}
+          placeholder="json, csv, or tsv"
+          helpText="leave blank to auto-detect based on URI"
+        />
       </FormLayout>
     );
   }

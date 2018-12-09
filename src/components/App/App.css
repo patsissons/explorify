@@ -4,10 +4,6 @@
   height: 100%;
 }
 
-/* .App .voyager {
-  display: none;
-} */
-
 .App.HideDataPane .voyager > .SplitPane > .Pane1 {
   display: none;
 }
@@ -16,6 +12,20 @@
   display: none;
 }
 
-/* .App.DataPaneVisible .Panel1 {
-  display: initial;
-} */
+.App .voyager > .load-data-pane__load-data-pane {
+  visibility: hidden;
+}
+
+.App .voyager > .load-data-pane__load-data-pane:after {
+  content: "Please load a dataset from the menu.";
+  display: block;
+  visibility: visible;
+}
+
+.App .Polaris-TopBar__NavigationIcon {
+  display: inherit;
+}
+
+.App .Polaris-TopBar__NavigationIcon > .Polaris-Icon {
+  fill: #637381;
+}

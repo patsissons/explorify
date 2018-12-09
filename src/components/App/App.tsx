@@ -19,7 +19,7 @@ interface State {
   dataLoaderType?: DataLoaderType;
   isDataPaneHidden?: boolean;
   isEncodingPaneHidden?: boolean;
-  isMobileNavVisible?: boolean;
+  isNavigationHidden?: boolean;
   toastContent?: string;
   toastIsError?: boolean;
   voyager?: Voyager;
@@ -50,13 +50,13 @@ export class App extends React.PureComponent<{}, State> {
       dataLoaderType,
       isDataPaneHidden,
       isEncodingPaneHidden,
-      isMobileNavVisible,
+      isNavigationHidden,
       toastContent,
       toastIsError,
       voyager
     } = this.state;
 
-    const navigation = voyager && (
+    const navigation = voyager && !Boolean(isNavigationHidden) && (
       <Navigation location="/">
         <Navigation.Section
           title="Load Data Source"
@@ -101,7 +101,7 @@ export class App extends React.PureComponent<{}, State> {
         <Frame
           navigation={navigation}
           topBar={topBar}
-          showMobileNavigation={isMobileNavVisible}
+          showMobileNavigation={!Boolean(isNavigationHidden)}
           onNavigationDismiss={this.dismissNavigation}
         >
           {!voyager && <SkeletonPage title="Loading Voyager..." />}
@@ -128,7 +128,7 @@ export class App extends React.PureComponent<{}, State> {
   };
 
   dismissNavigation = () => {
-    this.setState({ isMobileNavVisible: false });
+    this.setState({ isNavigationHidden: true });
   };
 
   dismissToast = () => {
@@ -173,9 +173,9 @@ export class App extends React.PureComponent<{}, State> {
   };
 
   toggleNavigation = () => {
-    const { isMobileNavVisible } = this.state;
+    const { isNavigationHidden } = this.state;
 
-    this.setState({ isMobileNavVisible: !Boolean(isMobileNavVisible) });
+    this.setState({ isNavigationHidden: !Boolean(isNavigationHidden) });
   };
 }
 
