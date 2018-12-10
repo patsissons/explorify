@@ -1,7 +1,7 @@
 import TestDataLoader, {
   dataLoader as testDataLoader,
-  Props as TestLoaderProps
+  Props as TestDataLoaderProps
 } from "./TestDataLoader";
 
-export { testDataLoader, TestLoaderProps };
+export { testDataLoader, TestDataLoaderProps };
 export default TestDataLoader;

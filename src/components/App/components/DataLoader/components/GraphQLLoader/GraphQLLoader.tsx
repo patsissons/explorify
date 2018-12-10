@@ -13,6 +13,7 @@ type ComposedProps = Props;
 
 interface State {
   apiName?: string;
+  loading?: boolean;
   query?: string;
   endpoint?: string;
   result?: string;
@@ -38,7 +39,7 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
   }
 
   render() {
-    const { apiName, query, endpoint, result } = this.state;
+    const { apiName, loading, query, endpoint, result } = this.state;
 
     return (
       <FormLayout>
@@ -59,7 +60,9 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
           onChange={this.setQuery}
           value={query}
         />
-        <Button onClick={this.previewResult}>Preview</Button>
+        <Button onClick={this.previewResult} loading={loading}>
+          Preview
+        </Button>
         {result && <pre>{result}</pre>}
       </FormLayout>
     );
@@ -83,10 +86,13 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
 
   previewResult = async () => {
     const { query, endpoint } = this.state;
+
     try {
       if (!query || !endpoint) {
         throw new Error("Invalid query or endpoint");
       }
+
+      this.setState({ loading: true });
 
       const result = await dataLoader(query, endpoint);
 
@@ -123,7 +129,7 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
   };
 
   setResult = (result: string) => {
-    this.setState({ result });
+    this.setState({ result, loading: false });
   };
 }
 
@@ -147,7 +153,5 @@ export async function dataLoader(
 
   return values;
 }
-
-// https://github.com/APIs-guru/graphql-apis
 
 export default GraphQLLoader;

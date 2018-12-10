@@ -4,12 +4,14 @@ import { Modal, FormLayout, TextField } from "@shopify/polaris";
 
 import {
   DataLoaderFunction,
+  DBLoader,
   TestDataLoader,
   VegaLoader,
   GraphQLLoader
 } from "./components";
 
 export enum DataLoaderType {
+  DB = "Database",
   GraphQL = "GraphQL",
   Test = "Test",
   Vega = "Vega (URL)"
@@ -25,6 +27,7 @@ type ComposedProps = Props;
 
 interface State {
   loader?: DataLoaderFunction;
+  loading?: boolean;
   name: string;
 }
 
@@ -33,13 +36,18 @@ export class DataLoader extends React.PureComponent<ComposedProps, State> {
 
   render() {
     const { dismiss, type } = this.props;
-    const { name } = this.state;
+    const { loading, name } = this.state;
 
     return (
       <Modal
+        loading={loading}
         open={Boolean(type)}
         onClose={dismiss}
-        primaryAction={{ content: "Load Data", onAction: this.handleLoadData }}
+        primaryAction={{
+          content: "Load Data",
+          onAction: this.handleLoadData,
+          loading
+        }}
         title={`Load ${name} Data...`}
       >
         <Modal.Section>
@@ -59,6 +67,9 @@ export class DataLoader extends React.PureComponent<ComposedProps, State> {
   renderLoader() {
     const { type } = this.props;
     switch (type) {
+      case DataLoaderType.DB:
+        return <DBLoader onMounted={this.onMounted} />;
+
       case DataLoaderType.GraphQL:
         return <GraphQLLoader onMounted={this.onMounted} />;
 
@@ -73,7 +84,7 @@ export class DataLoader extends React.PureComponent<ComposedProps, State> {
   }
 
   handleLoadData = async () => {
-    const { dismiss, loadData, type } = this.props;
+    const { loadData, type } = this.props;
     const { loader, name } = this.state;
 
     try {
@@ -85,11 +96,15 @@ export class DataLoader extends React.PureComponent<ComposedProps, State> {
         throw new Error("Invalid data loader type");
       }
 
+      this.setState({ loading: true });
+
       const { name: dataName, values } = await loader();
 
       loadData(name || dataName || type, values);
+
+      this.setState({ loading: false });
     } catch (e) {
-      dismiss();
+      this.setState({ loading: false });
     }
   };
 
