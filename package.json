@@ -1,7 +1,7 @@
 {
   "name": "explorify",
   "version": "0.1.0",
-  "homepage": "https://patsissons.github.io/explorify",
+  "homepage": "https://data-explorify.herokuapp.com/",
   "private": true,
   "proxy": "http://localhost:3001",
   "scripts": {
