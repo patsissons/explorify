@@ -7,6 +7,7 @@
   "scripts": {
     "start": "concurrently \"react-scripts-ts start\" \"tsc -w -p server\"  \"nodemon dist/index.js\"",
     "server": "node dist/index.js",
+    "heroku-postbuild": "yarn build",
     "build": "concurrently \"yarn build:client\" \"yarn build:server\"",
     "build:client": "react-scripts-ts build",
     "build:server": "tsc -p server",
