@@ -6,7 +6,7 @@ import path from "path";
 const app = express();
 const basePath = path.join(__dirname, "..", "build");
 
-app.set("port", process.env.SERVER_PORT || 3001);
+app.set("port", process.env.PORT || 3001);
 
 app.use(express.static(basePath));
 app.use(express.json());
