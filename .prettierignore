@@ -1,0 +1,12 @@
+*.ico
+*.lock
+*.log
+.env.local
+.gitignore
+.nvmrc
+.prettierignore
+Procfile
+/build
+/coverage
+/dist
+/node_modules
