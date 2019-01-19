@@ -2,8 +2,8 @@ import * as React from 'react';
 
 import {Frame, Navigation, SkeletonPage, Toast, TopBar} from '@shopify/polaris';
 import classNames from 'classnames';
-import {Voyager} from 'datavoyager';
 import logo from 'datavoyager/images/logo.png';
+import {Voyager} from 'datavoyager';
 
 import {DataLoader, DataLoaderType, VoyagerContainer} from './components';
 
@@ -25,6 +25,7 @@ export class App extends React.PureComponent<{}, State> {
   private readonly dataSourceItems = Object.keys(DataLoaderType)
     .filter((type) => {
       if (type === DataLoaderType.Test) {
+        // eslint-disable-next-line no-process-env
         return Boolean(process.env.SHOW_TEST_LOADER);
       }
 
@@ -50,7 +51,7 @@ export class App extends React.PureComponent<{}, State> {
       voyager,
     } = this.state;
 
-    const navigation = voyager && !Boolean(isNavigationHidden) && (
+    const navigation = voyager && !isNavigationHidden && (
       <Navigation location="/">
         <Navigation.Section
           title="Load Data Source"
@@ -79,10 +80,7 @@ export class App extends React.PureComponent<{}, State> {
     );
 
     const topBar = (
-      <TopBar
-        showNavigationToggle={true}
-        onNavigationToggle={this.toggleNavigation}
-      />
+      <TopBar showNavigationToggle onNavigationToggle={this.toggleNavigation} />
     );
 
     return (
@@ -95,7 +93,7 @@ export class App extends React.PureComponent<{}, State> {
         <Frame
           navigation={navigation}
           topBar={topBar}
-          showMobileNavigation={!Boolean(isNavigationHidden)}
+          showMobileNavigation={!isNavigationHidden}
           onNavigationDismiss={this.dismissNavigation}
         >
           {!voyager && <SkeletonPage title="Loading Voyager..." />}
@@ -157,19 +155,19 @@ export class App extends React.PureComponent<{}, State> {
   toggleDataPane = () => {
     const {isDataPaneHidden} = this.state;
 
-    this.setState({isDataPaneHidden: !Boolean(isDataPaneHidden)});
+    this.setState({isDataPaneHidden: !isDataPaneHidden});
   };
 
   toggleEncodingPane = () => {
     const {isEncodingPaneHidden} = this.state;
 
-    this.setState({isEncodingPaneHidden: !Boolean(isEncodingPaneHidden)});
+    this.setState({isEncodingPaneHidden: !isEncodingPaneHidden});
   };
 
   toggleNavigation = () => {
     const {isNavigationHidden} = this.state;
 
-    this.setState({isNavigationHidden: !Boolean(isNavigationHidden)});
+    this.setState({isNavigationHidden: !isNavigationHidden});
   };
 }
 

@@ -24,6 +24,7 @@ export interface JsonDataFormat extends DataFormatBase {
    * If no extension is detected, `"json"` will be used by default.
    */
   type?: 'json';
+
   /**
    * The JSON property containing the desired data.
    * This parameter can be used when the loaded JSON file may have surrounding structure or meta-data.
@@ -39,12 +40,14 @@ export interface TopoDataFormat extends DataFormatBase {
    * If no extension is detected, `"json"` will be used by default.
    */
   type?: 'topojson';
+
   /**
    * The name of the TopoJSON object set to convert to a GeoJSON feature collection.
    * For example, in a map of the world, there may be an object set named `"countries"`.
    * Using the feature property, we can extract this set and generate a GeoJSON feature object for each country.
    */
   feature?: string;
+
   /**
    * The name of the TopoJSON object set to convert to mesh.
    * Similar to the `feature` option, `mesh` extracts a named TopoJSON object set.
@@ -71,6 +74,7 @@ export interface UrlData {
    * An object that specifies the format for parsing the data file.
    */
   format?: DataFormat;
+
   /**
    * An URL from which to load the data set. Use the `format.type` property
    * to ensure the loaded data is correctly parsed.
@@ -82,6 +86,7 @@ export interface InlineData {
    * An object that specifies the format for parsing the data values.
    */
   format?: DataFormat;
+
   /**
    * The full data set, included inline. This can be an array of objects or primitive values or a string.
    * Arrays of primitive values are ingested as objects with a `data` property. Strings are parsed according to the specified format type.
@@ -93,6 +98,7 @@ export interface NamedData {
    * An object that specifies the format for parsing the data.
    */
   format?: DataFormat;
+
   /**
    * Provide a placeholder name and bind data at runtime.
    */

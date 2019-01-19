@@ -83,8 +83,8 @@ export class DBLoader extends React.PureComponent<ComposedProps, State> {
       const result = await dataLoader(connection, query);
 
       this.setResult(JSON.stringify(result, null, 2));
-    } catch (e) {
-      this.setResult(e.toString());
+    } catch (error) {
+      this.setResult(error.toString());
     }
   };
 

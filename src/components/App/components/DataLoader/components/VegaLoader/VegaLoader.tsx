@@ -2,8 +2,8 @@ import * as React from 'react';
 
 import * as vega from 'vega';
 
-import {DataLoaderFunction, DataLoaderMountedProps} from '../shared';
 import {FormLayout, Select, TextField} from '@shopify/polaris';
+import {DataLoaderFunction, DataLoaderMountedProps} from '../shared';
 
 export interface Props extends DataLoaderMountedProps {}
 
@@ -16,12 +16,12 @@ interface State {
 }
 
 export class VegaLoader extends React.PureComponent<ComposedProps, State> {
+  state: State = {};
+
   private readonly dataSourceMap = dataSourceMap();
   private readonly options = Array.from(this.dataSourceMap.keys()).map(
     (value) => ({label: value, value}),
   );
-
-  state: State = {};
 
   componentDidMount() {
     const {onMounted} = this.props;

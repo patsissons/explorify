@@ -11,6 +11,7 @@ export declare type Container = string | HTMLElement;
  */
 export declare class Voyager {
   constructor(container: Container, config: VoyagerConfig, data: Data);
+
   /**
    * Update the dataset currently loaded into voyager
    *
@@ -19,18 +20,21 @@ export declare class Voyager {
    * @memberof Voyager
    */
   updateData(data: Data): void;
+
   /**
    * Update state to reflect the previous state
    *
    * @memberof Voyager
    */
   undo(): void;
+
   /**
    * Update state to reflect the future state
    *
    * @memberof Voyager
    */
   redo(): void;
+
   /**
    * Update the configuration of the voyager application.
    *
@@ -40,6 +44,7 @@ export declare class Voyager {
    */
   updateConfig(config: VoyagerConfig): void;
   setFilename(filename: string): void;
+
   /**
    * Apply a vega-lite spec to voyager.
    *
@@ -48,6 +53,7 @@ export declare class Voyager {
    * @memberof Voyager
    */
   setSpec(spec: Object): void;
+
   /**
    *
    * Gets Vega-Lite spec of current specified view
@@ -57,6 +63,7 @@ export declare class Voyager {
    * @memberof Voyager
    */
   getSpec(includeData: boolean): Object;
+
   /**
    *
    * Gets the current bookmarked vega-lite specs.

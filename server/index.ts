@@ -1,7 +1,9 @@
-import express from 'express';
-import {createConnection} from 'any-db';
+/* eslint-disable no-console, no-process-env */
 import http from 'http';
 import path from 'path';
+
+import express from 'express';
+import {createConnection} from 'any-db';
 
 const app = express();
 const basePath = path.join(__dirname, '..', 'build');

@@ -1,8 +1,8 @@
 import * as React from 'react';
 
 import {Button, FormLayout, Select, TextField} from '@shopify/polaris';
-import {graphqlLodash} from 'graphql-lodash';
 import {request} from 'graphql-request';
+import {graphqlLodash} from 'graphql-lodash';
 
 import {DataLoaderFunction, DataLoaderMountedProps} from '../shared';
 import apis from './apis.json';
@@ -13,24 +13,26 @@ type ComposedProps = Props;
 
 interface State {
   apiName?: string;
+  endpoint?: string;
   loading?: boolean;
   query?: string;
-  endpoint?: string;
   result?: string;
 }
 
+const CustomApiName = 'Custom';
+
 export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
+  state: State = {
+    apiName: CustomApiName,
+  };
+
   private readonly options = [
-    {label: 'Custom', value: 'Custom'},
+    {label: CustomApiName, value: CustomApiName},
     ...apis.map(({info: {title: value}}) => ({
       label: value,
       value,
     })),
   ];
-
-  state: State = {
-    apiName: this.options[0].value,
-  };
 
   componentDidMount() {
     const {onMounted} = this.props;
@@ -97,8 +99,8 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
       const result = await dataLoader(query, endpoint);
 
       this.setResult(JSON.stringify(result, null, 2));
-    } catch (e) {
-      this.setResult(e.toString());
+    } catch (error) {
+      this.setResult(error.toString());
     }
   };
 

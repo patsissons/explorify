@@ -11,7 +11,9 @@ import {
 } from './components';
 
 export enum DataLoaderType {
+  // eslint-disable-next-line shopify/typescript/prefer-pascal-case-enums
   DB = 'Database',
+  // eslint-disable-next-line shopify/typescript/prefer-pascal-case-enums
   GraphQL = 'GraphQL',
   Test = 'Test',
   Vega = 'Vega (URL)',
@@ -103,7 +105,7 @@ export class DataLoader extends React.PureComponent<ComposedProps, State> {
       loadData(name || dataName || type, values);
 
       this.setState({loading: false});
-    } catch (e) {
+    } catch (error) {
       this.setState({loading: false});
     }
   };
