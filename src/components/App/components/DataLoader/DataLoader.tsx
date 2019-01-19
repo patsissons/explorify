@@ -1,20 +1,20 @@
-import * as React from "react";
+import * as React from 'react';
 
-import { Modal, FormLayout, TextField } from "@shopify/polaris";
+import {Modal, FormLayout, TextField} from '@shopify/polaris';
 
 import {
   DataLoaderFunction,
   DBLoader,
   TestDataLoader,
   VegaLoader,
-  GraphQLLoader
-} from "./components";
+  GraphQLLoader,
+} from './components';
 
 export enum DataLoaderType {
-  DB = "Database",
-  GraphQL = "GraphQL",
-  Test = "Test",
-  Vega = "Vega (URL)"
+  DB = 'Database',
+  GraphQL = 'GraphQL',
+  Test = 'Test',
+  Vega = 'Vega (URL)',
 }
 
 export interface Props {
@@ -32,11 +32,11 @@ interface State {
 }
 
 export class DataLoader extends React.PureComponent<ComposedProps, State> {
-  state: State = { name: "" };
+  state: State = {name: ''};
 
   render() {
-    const { dismiss, type } = this.props;
-    const { loading, name } = this.state;
+    const {dismiss, type} = this.props;
+    const {loading, name} = this.state;
 
     return (
       <Modal
@@ -44,9 +44,9 @@ export class DataLoader extends React.PureComponent<ComposedProps, State> {
         open={Boolean(type)}
         onClose={dismiss}
         primaryAction={{
-          content: "Load Data",
+          content: 'Load Data',
           onAction: this.handleLoadData,
-          loading
+          loading,
         }}
         title={`Load ${name} Data...`}
       >
@@ -65,7 +65,7 @@ export class DataLoader extends React.PureComponent<ComposedProps, State> {
   }
 
   renderLoader() {
-    const { type } = this.props;
+    const {type} = this.props;
     switch (type) {
       case DataLoaderType.DB:
         return <DBLoader onMounted={this.onMounted} />;
@@ -84,36 +84,36 @@ export class DataLoader extends React.PureComponent<ComposedProps, State> {
   }
 
   handleLoadData = async () => {
-    const { loadData, type } = this.props;
-    const { loader, name } = this.state;
+    const {loadData, type} = this.props;
+    const {loader, name} = this.state;
 
     try {
       if (!loader) {
-        throw new Error("Invalid data loader function");
+        throw new Error('Invalid data loader function');
       }
 
       if (!type) {
-        throw new Error("Invalid data loader type");
+        throw new Error('Invalid data loader type');
       }
 
-      this.setState({ loading: true });
+      this.setState({loading: true});
 
-      const { name: dataName, values } = await loader();
+      const {name: dataName, values} = await loader();
 
       loadData(name || dataName || type, values);
 
-      this.setState({ loading: false });
+      this.setState({loading: false});
     } catch (e) {
-      this.setState({ loading: false });
+      this.setState({loading: false});
     }
   };
 
   onMounted = (loader: DataLoaderFunction) => {
-    this.setState({ loader });
+    this.setState({loader});
   };
 
   setName = (name: string) => {
-    this.setState({ name });
+    this.setState({name});
   };
 }
 

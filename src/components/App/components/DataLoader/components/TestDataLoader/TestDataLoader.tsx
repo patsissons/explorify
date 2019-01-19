@@ -1,6 +1,6 @@
-import * as React from "react";
+import * as React from 'react';
 
-import { DataLoaderFunction, DataLoaderMountedProps } from "../shared";
+import {DataLoaderFunction, DataLoaderMountedProps} from '../shared';
 
 export interface Props extends DataLoaderMountedProps {}
 
@@ -17,7 +17,7 @@ export class TestDataLoader extends React.PureComponent<ComposedProps> {
   }
 
   componentDidMount() {
-    const { onMounted } = this.props;
+    const {onMounted} = this.props;
 
     onMounted(this.dataLoader);
   }
@@ -26,12 +26,12 @@ export class TestDataLoader extends React.PureComponent<ComposedProps> {
     const values = await dataLoader();
 
     return {
-      values
+      values,
     };
   };
 }
 
-export const data = [{ id: 1, title: "a" }, { id: 2, title: "b" }];
+export const data = [{id: 1, title: 'a'}, {id: 2, title: 'b'}];
 
 export async function dataLoader() {
   const values = await Promise.resolve(data);

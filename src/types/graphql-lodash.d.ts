@@ -1,8 +1,8 @@
-import { DocumentNode } from "graphql/language";
+import {DocumentNode} from 'graphql/language';
 
 export declare function graphqlLodash(
   query: string,
-  operationName?: string
+  operationName?: string,
 ): {
   query: string;
   transform<T = any>(data: any): T;
@@ -10,7 +10,7 @@ export declare function graphqlLodash(
 
 export declare function graphqlLodash(
   query: DocumentNode,
-  operationName?: string
+  operationName?: string,
 ): {
   query: DocumentNode;
   transform<T = any>(data: any): T;

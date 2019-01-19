@@ -1,7 +1,7 @@
-import { VoyagerConfig } from "datavoyager/build/models/config";
-import { Data } from "vega-lite";
+import {VoyagerConfig} from 'datavoyager/build/models/config';
+import {Data} from 'vega-lite';
 
-export { VoyagerConfig };
+export {VoyagerConfig};
 
 export declare type Container = string | HTMLElement;
 
@@ -79,5 +79,5 @@ export declare class Voyager {
 export declare function CreateVoyager(
   container: Container,
   config?: VoyagerConfig | null,
-  data?: Data | null
+  data?: Data | null,
 ): Voyager;

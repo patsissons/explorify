@@ -1,9 +1,9 @@
-import * as React from "react";
+import * as React from 'react';
 
-import { Button, FormLayout, TextField } from "@shopify/polaris";
-import { loader } from "vega";
+import {Button, FormLayout, TextField} from '@shopify/polaris';
+import {loader} from 'vega';
 
-import { DataLoaderFunction, DataLoaderMountedProps } from "../shared";
+import {DataLoaderFunction, DataLoaderMountedProps} from '../shared';
 
 export interface Props extends DataLoaderMountedProps {
   dbProxy?: string;
@@ -20,12 +20,12 @@ interface State {
 
 export class DBLoader extends React.PureComponent<ComposedProps, State> {
   state: State = {
-    connection: "mysql://rfamro@mysql-rfam-public.ebi.ac.uk:4497/Rfam",
-    query: "select * from family"
+    connection: 'mysql://rfamro@mysql-rfam-public.ebi.ac.uk:4497/Rfam',
+    query: 'select * from family',
   };
 
   render() {
-    const { connection, loading, query, result } = this.state;
+    const {connection, loading, query, result} = this.state;
 
     return (
       <FormLayout>
@@ -51,34 +51,34 @@ export class DBLoader extends React.PureComponent<ComposedProps, State> {
   }
 
   componentDidMount() {
-    const { onMounted } = this.props;
+    const {onMounted} = this.props;
 
     onMounted(this.dataLoader);
   }
 
   dataLoader: DataLoaderFunction = async () => {
-    const { connection, query } = this.state;
+    const {connection, query} = this.state;
 
     if (!connection || !query) {
-      throw new Error("Invalid connection or query");
+      throw new Error('Invalid connection or query');
     }
 
     const values = await dataLoader(connection, query);
 
     return {
-      values
+      values,
     };
   };
 
   previewResult = async () => {
-    const { connection, query } = this.state;
+    const {connection, query} = this.state;
 
     try {
       if (!connection || !query) {
-        throw new Error("Invalid connection or query");
+        throw new Error('Invalid connection or query');
       }
 
-      this.setState({ loading: true });
+      this.setState({loading: true});
 
       const result = await dataLoader(connection, query);
 
@@ -89,30 +89,30 @@ export class DBLoader extends React.PureComponent<ComposedProps, State> {
   };
 
   setConnection = (connection: string) => {
-    this.setState({ connection });
+    this.setState({connection});
   };
 
   setQuery = (query: string) => {
-    this.setState({ query });
+    this.setState({query});
   };
 
   setResult = (result: string) => {
-    this.setState({ result, loading: false });
+    this.setState({result, loading: false});
   };
 }
 
 export async function dataLoader(
   connection: string,
   query: string,
-  dbProxy = ""
+  dbProxy = '',
 ) {
   const result = await loader().load(`${dbProxy}/db`, {
-    body: JSON.stringify({ connection, query }),
+    body: JSON.stringify({connection, query}),
     headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json"
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
     },
-    method: "post"
+    method: 'post',
   });
 
   return JSON.parse(result) as {}[];

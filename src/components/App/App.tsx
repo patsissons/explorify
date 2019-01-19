@@ -1,19 +1,13 @@
-import * as React from "react";
+import * as React from 'react';
 
-import {
-  Frame,
-  Navigation,
-  SkeletonPage,
-  Toast,
-  TopBar
-} from "@shopify/polaris";
-import classNames from "classnames";
-import { Voyager } from "datavoyager";
-import logo from "datavoyager/images/logo.png";
+import {Frame, Navigation, SkeletonPage, Toast, TopBar} from '@shopify/polaris';
+import classNames from 'classnames';
+import {Voyager} from 'datavoyager';
+import logo from 'datavoyager/images/logo.png';
 
-import { DataLoader, DataLoaderType, VoyagerContainer } from "./components";
+import {DataLoader, DataLoaderType, VoyagerContainer} from './components';
 
-import "./App.css";
+import './App.css';
 
 interface State {
   dataLoaderType?: DataLoaderType;
@@ -29,19 +23,19 @@ export class App extends React.PureComponent<{}, State> {
   state: State = {};
 
   private readonly dataSourceItems = Object.keys(DataLoaderType)
-    .filter(type => {
+    .filter((type) => {
       if (type === DataLoaderType.Test) {
         return Boolean(process.env.SHOW_TEST_LOADER);
       }
 
       return true;
     })
-    .map(key => {
+    .map((key) => {
       return {
         label: DataLoaderType[key],
         onClick: () => {
           this.showDataLoader(DataLoaderType[key]);
-        }
+        },
       };
     });
 
@@ -53,7 +47,7 @@ export class App extends React.PureComponent<{}, State> {
       isNavigationHidden,
       toastContent,
       toastIsError,
-      voyager
+      voyager,
     } = this.state;
 
     const navigation = voyager && !Boolean(isNavigationHidden) && (
@@ -66,19 +60,19 @@ export class App extends React.PureComponent<{}, State> {
           title="Options"
           items={[
             {
-              label: isDataPaneHidden ? "Show Data Pane" : "Hide Data Pane",
+              label: isDataPaneHidden ? 'Show Data Pane' : 'Hide Data Pane',
               onClick: () => {
                 this.toggleDataPane();
-              }
+              },
             },
             {
               label: isEncodingPaneHidden
-                ? "Show Encoding Pane"
-                : "Hide Encoding Pane",
+                ? 'Show Encoding Pane'
+                : 'Hide Encoding Pane',
               onClick: () => {
                 this.toggleEncodingPane();
-              }
-            }
+              },
+            },
           ]}
         />
       </Navigation>
@@ -93,9 +87,9 @@ export class App extends React.PureComponent<{}, State> {
 
     return (
       <div
-        className={classNames("App", {
+        className={classNames('App', {
           HideDataPane: isDataPaneHidden,
-          HideEncodingPane: isEncodingPaneHidden
+          HideEncodingPane: isEncodingPaneHidden,
         })}
       >
         <Frame
@@ -124,23 +118,23 @@ export class App extends React.PureComponent<{}, State> {
   }
 
   dismissModal = () => {
-    this.setState({ dataLoaderType: undefined });
+    this.setState({dataLoaderType: undefined});
   };
 
   dismissNavigation = () => {
-    this.setState({ isNavigationHidden: true });
+    this.setState({isNavigationHidden: true});
   };
 
   dismissToast = () => {
-    this.setState({ toastContent: undefined, toastIsError: undefined });
+    this.setState({toastContent: undefined, toastIsError: undefined});
   };
 
   loadData = (name: string, data: {}[]) => {
-    const { voyager } = this.state;
+    const {voyager} = this.state;
 
     if (voyager) {
       voyager.setFilename(name);
-      voyager.updateData({ values: data });
+      voyager.updateData({values: data});
 
       this.dismissModal();
       this.dismissNavigation();
@@ -149,48 +143,48 @@ export class App extends React.PureComponent<{}, State> {
   };
 
   onVoyagerMounted = (voyager: any) => {
-    this.setState({ voyager });
+    this.setState({voyager});
   };
 
   showDataLoader = (type: DataLoaderType) => {
-    this.setState({ dataLoaderType: type });
+    this.setState({dataLoaderType: type});
   };
 
   showToast = (content: string, isError?: boolean) => {
-    this.setState({ toastContent: content, toastIsError: isError });
+    this.setState({toastContent: content, toastIsError: isError});
   };
 
   toggleDataPane = () => {
-    const { isDataPaneHidden } = this.state;
+    const {isDataPaneHidden} = this.state;
 
-    this.setState({ isDataPaneHidden: !Boolean(isDataPaneHidden) });
+    this.setState({isDataPaneHidden: !Boolean(isDataPaneHidden)});
   };
 
   toggleEncodingPane = () => {
-    const { isEncodingPaneHidden } = this.state;
+    const {isEncodingPaneHidden} = this.state;
 
-    this.setState({ isEncodingPaneHidden: !Boolean(isEncodingPaneHidden) });
+    this.setState({isEncodingPaneHidden: !Boolean(isEncodingPaneHidden)});
   };
 
   toggleNavigation = () => {
-    const { isNavigationHidden } = this.state;
+    const {isNavigationHidden} = this.state;
 
-    this.setState({ isNavigationHidden: !Boolean(isNavigationHidden) });
+    this.setState({isNavigationHidden: !Boolean(isNavigationHidden)});
   };
 }
 
 export const theme = {
   colors: {
     topBar: {
-      background: "#C4CDD5",
-      backgroundDarker: "#C4CDD5",
-      backgroundLighter: "#F9FAFB"
-    }
+      background: '#C4CDD5',
+      backgroundDarker: '#C4CDD5',
+      backgroundLighter: '#F9FAFB',
+    },
   },
   logo: {
     topBarSource: logo,
-    width: 174
-  }
+    width: 174,
+  },
 };
 
 export default App;

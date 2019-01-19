@@ -17,7 +17,7 @@
 }
 
 .App .voyager > .load-data-pane__load-data-pane:after {
-  content: "Please load a dataset from the menu.";
+  content: 'Please load a dataset from the menu.';
   display: block;
   visibility: visible;
 }

@@ -1,4 +1,4 @@
-declare module "apis.json" {
+declare module 'apis.json' {
   export interface GraphQLApiExternalDocs {
     description: string;
     url: string;

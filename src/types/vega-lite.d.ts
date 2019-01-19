@@ -7,7 +7,7 @@ export interface DataFormatBase {
    * For `"date"`, we parse data based using Javascript's [`Date.parse()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse).
    * For Specific date formats can be provided (e.g., `{foo: 'date:"%m%d%Y"'}`), using the [d3-time-format syntax](https://github.com/d3/d3-time-format#locale_format). UTC date format parsing is supported similarly (e.g., `{foo: 'utc:"%m%d%Y"'}`). See more about [UTC time](timeunit.html#utc)
    */
-  parse?: "auto" | object;
+  parse?: 'auto' | object;
 }
 export interface CsvDataFormat extends DataFormatBase {
   /**
@@ -15,7 +15,7 @@ export interface CsvDataFormat extends DataFormatBase {
    * The default format type is determined by the extension of the file URL.
    * If no extension is detected, `"json"` will be used by default.
    */
-  type?: "csv" | "tsv";
+  type?: 'csv' | 'tsv';
 }
 export interface JsonDataFormat extends DataFormatBase {
   /**
@@ -23,7 +23,7 @@ export interface JsonDataFormat extends DataFormatBase {
    * The default format type is determined by the extension of the file URL.
    * If no extension is detected, `"json"` will be used by default.
    */
-  type?: "json";
+  type?: 'json';
   /**
    * The JSON property containing the desired data.
    * This parameter can be used when the loaded JSON file may have surrounding structure or meta-data.
@@ -38,7 +38,7 @@ export interface TopoDataFormat extends DataFormatBase {
    * The default format type is determined by the extension of the file URL.
    * If no extension is detected, `"json"` will be used by default.
    */
-  type?: "topojson";
+  type?: 'topojson';
   /**
    * The name of the TopoJSON object set to convert to a GeoJSON feature collection.
    * For example, in a map of the world, there may be an object set named `"countries"`.
@@ -57,7 +57,7 @@ export declare type DataFormat =
   | CsvDataFormat
   | JsonDataFormat
   | TopoDataFormat;
-export declare type DataFormatType = "json" | "csv" | "tsv" | "topojson";
+export declare type DataFormatType = 'json' | 'csv' | 'tsv' | 'topojson';
 export declare type Data = UrlData | InlineData | NamedData;
 export declare type InlineDataset =
   | number[]
