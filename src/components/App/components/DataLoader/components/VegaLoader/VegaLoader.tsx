@@ -10,13 +10,17 @@ export interface Props extends DataLoaderMountedProps {}
 type ComposedProps = Props;
 
 interface State {
-  uri?: string;
+  dataContent?: string;
+  headers?: string;
   sourceName?: string;
   type?: string;
+  uri?: string;
 }
 
 export class VegaLoader extends React.PureComponent<ComposedProps, State> {
-  state: State = {};
+  state: State = {
+    sourceName: CustomDataSourceName,
+  };
 
   private readonly dataSourceMap = dataSourceMap();
   private readonly options = Array.from(this.dataSourceMap.keys()).map(
@@ -30,7 +34,8 @@ export class VegaLoader extends React.PureComponent<ComposedProps, State> {
   }
 
   render() {
-    const {uri, sourceName, type} = this.state;
+    const {dataContent, headers, sourceName, type, uri} = this.state;
+
     return (
       <FormLayout>
         <Select
@@ -40,6 +45,14 @@ export class VegaLoader extends React.PureComponent<ComposedProps, State> {
           value={sourceName}
         />
         <TextField label="URI" value={uri} onChange={this.setUri} />
+        {sourceName === CustomDataSourceName && (
+          <TextField
+            label="Data"
+            multiline={5}
+            onChange={this.setDataContent}
+            value={dataContent}
+          />
+        )}
         <TextField
           label="type"
           value={type}
@@ -47,30 +60,46 @@ export class VegaLoader extends React.PureComponent<ComposedProps, State> {
           placeholder="json, csv, or tsv"
           helpText="leave blank to auto-detect based on URI"
         />
+        <TextField
+          label="Headers"
+          placeholder="JSON format"
+          value={headers}
+          onChange={this.setHeaders}
+        />
       </FormLayout>
     );
   }
 
   dataLoader: DataLoaderFunction = async () => {
-    const {type, uri} = this.state;
+    const {dataContent, headers, sourceName, type, uri} = this.state;
 
-    if (!uri) {
+    if (!uri && !dataContent) {
       throw new Error('Invalid data source selected');
     }
 
-    const [sourceName = undefined, source = undefined] =
+    const [name = undefined, source = undefined] =
       Array.from(this.dataSourceMap.entries())
-        .filter(([sourceName, source]) => source.uri === uri)
+        .filter(([name, source]) => source.uri === uri)
         .shift() || [];
 
     const values = await dataLoader(
       source || ({uri, format: {type}} as DataSource),
+      sourceName === CustomDataSourceName ? dataContent : undefined,
+      headers,
     );
 
     return {
-      name: sourceName,
+      name,
       values,
     };
+  };
+
+  setDataContent = (dataContent: string) => {
+    this.setState({dataContent});
+  };
+
+  setHeaders = (headers: string) => {
+    this.setState({headers});
   };
 
   setSource = (sourceName: string) => {
@@ -103,13 +132,15 @@ export interface Dataset {
   sources: {[key: string]: string | DataSource};
 }
 
+const CustomDataSourceName = 'Custom';
+
 function dataSourceMap() {
   return allDataSources().reduce((map, dataSource) => {
     return map.set(dataSource.sourceName, {
       format: dataSource.format,
       uri: dataSource.uri,
     });
-  }, new Map<string, DataSource>([['Custom', {uri: ''}]]));
+  }, new Map<string, DataSource>([[CustomDataSourceName, {uri: ''}]]));
 }
 
 function allDataSources() {
@@ -246,14 +277,20 @@ export function formatForUri(uri: string): vega.Format | undefined {
   return undefined;
 }
 
-export async function dataLoader(source: DataSource | string) {
+export async function dataLoader(
+  source: DataSource | string,
+  dataContent: string | undefined,
+  headers: string | undefined,
+) {
   const {format, uri} = getUriAndFormat(source);
 
   if (!format) {
     throw new Error('Invalid data source format');
   }
 
-  const content = await vega.loader().load(uri);
+  const content =
+    dataContent ||
+    (await vega.loader().load(uri, {headers: headers && JSON.parse(headers)}));
 
   return vega.read(content, format);
 }

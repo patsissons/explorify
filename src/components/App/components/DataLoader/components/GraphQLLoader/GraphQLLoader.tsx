@@ -1,10 +1,12 @@
 import * as React from 'react';
 
 import {Button, FormLayout, Select, TextField} from '@shopify/polaris';
-import {request} from 'graphql-request';
+import {GraphQLClient} from 'graphql-request';
 import {graphqlLodash} from 'graphql-lodash';
 
 import {DataLoaderFunction, DataLoaderMountedProps} from '../shared';
+import {GraphQLApi} from './types';
+
 import apis from './apis.json';
 
 export interface Props extends DataLoaderMountedProps {}
@@ -14,9 +16,11 @@ type ComposedProps = Props;
 interface State {
   apiName?: string;
   endpoint?: string;
+  headers?: string;
   loading?: boolean;
   query?: string;
   result?: string;
+  variables?: string;
 }
 
 const CustomApiName = 'Custom';
@@ -41,7 +45,15 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
   }
 
   render() {
-    const {apiName, loading, query, endpoint, result} = this.state;
+    const {
+      apiName,
+      endpoint,
+      headers,
+      loading,
+      query,
+      result,
+      variables,
+    } = this.state;
 
     return (
       <FormLayout>
@@ -62,6 +74,18 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
           onChange={this.setQuery}
           value={query}
         />
+        <TextField
+          label="Variables"
+          placeholder="JSON format"
+          value={variables}
+          onChange={this.setVariables}
+        />
+        <TextField
+          label="Headers"
+          placeholder="JSON format"
+          value={headers}
+          onChange={this.setHeaders}
+        />
         <Button onClick={this.previewResult} loading={loading}>
           Preview
         </Button>
@@ -71,14 +95,14 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
   }
 
   dataLoader: DataLoaderFunction = async () => {
-    const {query, endpoint} = this.state;
+    const {query, endpoint, headers, variables} = this.state;
 
     if (!query || !endpoint) {
       throw new Error('Invalid query or endpoint');
     }
 
     const api = apis.filter(({url}) => url === endpoint).shift();
-    const values = await dataLoader(query, endpoint);
+    const values = await dataLoader(query, endpoint, headers, variables);
 
     return {
       name: api && api.info.title,
@@ -87,7 +111,7 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
   };
 
   previewResult = async () => {
-    const {query, endpoint} = this.state;
+    const {query, endpoint, headers, variables} = this.state;
 
     try {
       if (!query || !endpoint) {
@@ -96,7 +120,7 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
 
       this.setState({loading: true});
 
-      const result = await dataLoader(query, endpoint);
+      const result = await dataLoader(query, endpoint, headers, variables);
 
       this.setResult(JSON.stringify(result, null, 2));
     } catch (error) {
@@ -105,12 +129,28 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
   };
 
   setApiName = (apiName: string) => {
-    const api = apis.filter(({info: {title}}) => title === apiName).shift();
+    const api = apis.filter(({info: {title}}) => title === apiName).shift() as
+      | GraphQLApi
+      | undefined;
 
     if (api) {
-      const {url: endpoint = '', sampleQuery: query = ''} = api;
+      const {
+        url: endpoint = '',
+        samples: [
+          {headers = undefined, query = undefined, variables = undefined},
+        ] = [{}],
+      } = api;
 
-      this.setState({apiName, endpoint, query});
+      // eslint-disable-next-line no-process-env
+      const token = process.env[`${apiName.toUpperCase()}_TOKEN`];
+
+      this.setState({
+        apiName,
+        endpoint,
+        headers: (token && `{"Authorization": "bearer ${token}"}`) || headers,
+        query,
+        variables,
+      });
     } else {
       this.setState({apiName, endpoint: '', query: ''});
     }
@@ -123,15 +163,47 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
   setEndpoint = (endpoint: string) => {
     this.setState({endpoint});
 
-    const api = apis.filter(({url}) => url === endpoint).shift();
+    const api = apis.filter(({url}) => url === endpoint).shift() as
+      | GraphQLApi
+      | undefined;
 
-    if (api && api.sampleQuery) {
-      this.setQuery(api.sampleQuery);
+    if (api) {
+      const {
+        info: {title},
+        samples: [
+          {headers = undefined, query = undefined, variables = undefined},
+        ] = [{}],
+      } = api;
+
+      // eslint-disable-next-line no-process-env
+      const token = process.env[`${title.toUpperCase()}_TOKEN`];
+
+      if (headers) {
+        this.setHeaders(
+          (token && `{"Authorization": "bearer ${token}"}`) || headers,
+        );
+      }
+
+      if (query) {
+        this.setQuery(query);
+      }
+
+      if (variables) {
+        this.setVariables(variables);
+      }
     }
+  };
+
+  setHeaders = (headers: string) => {
+    this.setState({headers});
   };
 
   setResult = (result: string) => {
     this.setState({result, loading: false});
+  };
+
+  setVariables = (variables: string) => {
+    this.setState({variables});
   };
 }
 
@@ -142,6 +214,8 @@ interface Result {
 export async function dataLoader(
   lodashQuery: string,
   endpoint: string | undefined,
+  headers: string | undefined,
+  variables: string | undefined,
 ) {
   if (!endpoint) {
     throw new Error('Invalid endpoint');
@@ -149,7 +223,9 @@ export async function dataLoader(
 
   const {query, transform} = graphqlLodash(lodashQuery);
 
-  const data = await request<Result>(endpoint, query);
+  const data = await new GraphQLClient(endpoint, {
+    headers: headers && JSON.parse(headers),
+  }).request(query, variables && JSON.parse(variables));
 
   const {values} = transform<Result>(data);
 
