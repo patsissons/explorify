@@ -5,6 +5,17 @@ import path from 'path';
 import express from 'express';
 import {createConnection} from 'any-db';
 
+if (!process.env.BABEL_ENV) {
+  process.env.BABEL_ENV = 'development';
+}
+
+if (!process.env.NODE_ENV) {
+  process.env.NODE_ENV = 'development';
+}
+
+// load dotenv
+require('react-scripts-ts/config/env');
+
 const app = express();
 const basePath = path.join(__dirname, '..', 'build');
 
