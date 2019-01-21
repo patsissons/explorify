@@ -23,7 +23,7 @@
     "noUnusedLocals": true,
     "paths": {
       "@app/*": ["./src/*"],
-      "*": ["./src/types/*"]
+      "*": ["./types/*"]
     }
   },
   "exclude": [
