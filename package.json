@@ -18,7 +18,7 @@
     "eject": "react-scripts-ts eject",
     "lint": "eslint '**/*' --ext .js --ext .ts --ext .tsx --max-warnings 0 --format codeframe",
     "lint:stats": "yarn lint --format node_modules/eslint-stats/byError.js",
-    "predeploy": "npm run build:prod",
+    "predeploy": "cross-env PUBLIC_URL=/explorify npm run build:prod",
     "pretty": "prettier --write '**/*'",
     "deploy": "gh-pages -d build"
   },
