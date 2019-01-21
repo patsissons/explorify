@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import {Button, FormLayout, Select, TextField} from '@shopify/polaris';
+import {parse, OperationDefinitionNode} from 'graphql';
 import {GraphQLClient} from 'graphql-request';
 import {graphqlLodash} from 'graphql-lodash';
 
@@ -207,12 +208,43 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
   };
 }
 
-interface Result {
-  values: any;
+interface Result<T = any> {
+  values: T[];
+}
+
+export function graphQLOperations(query: string) {
+  const document = parse(query);
+
+  return document.definitions
+    .filter(
+      (def): def is OperationDefinitionNode =>
+        def.kind === 'OperationDefinition',
+    )
+    .map(({name}) => name && name.value)
+    .filter((name) => Boolean(name));
+}
+
+export async function graphQLResult<T = any>(
+  query: string,
+  operationName: string | undefined,
+  endpoint: string,
+  headers: string | undefined,
+  variables: any,
+) {
+  const {query: transformedQuery, transform} = graphqlLodash(
+    query,
+    operationName,
+  );
+
+  const data = await new GraphQLClient(endpoint, {
+    headers: headers && JSON.parse(headers),
+  }).request(transformedQuery, variables && JSON.parse(variables));
+
+  return transform<T>(data);
 }
 
 export async function dataLoader(
-  lodashQuery: string,
+  query: string,
   endpoint: string | undefined,
   headers: string | undefined,
   variables: string | undefined,
@@ -221,15 +253,28 @@ export async function dataLoader(
     throw new Error('Invalid endpoint');
   }
 
-  const {query, transform} = graphqlLodash(lodashQuery);
+  const operations = graphQLOperations(query);
 
-  const data = await new GraphQLClient(endpoint, {
-    headers: headers && JSON.parse(headers),
-  }).request(query, variables && JSON.parse(variables));
+  if (!operations.length) {
+    operations.push(undefined);
+  }
 
-  const {values} = transform<Result>(data);
-
-  return values;
+  return (await Promise.all(
+    operations.map((operationName) => {
+      return graphQLResult<Result>(
+        query,
+        operationName,
+        endpoint,
+        headers,
+        variables,
+      );
+    }),
+  )).reduce(
+    (values, result) => {
+      return values.concat(result.values);
+    },
+    [] as any[],
+  );
 }
 
 export default GraphQLLoader;
