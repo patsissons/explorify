@@ -1,7 +1,4 @@
-import GraphQLLoader, {
-  dataLoader as graphqlDataLoader,
-  Props as GraphQLLoaderProps,
-} from './GraphQLLoader';
+import GraphQLLoader, {dataLoader, Props} from './GraphQLLoader';
 
-export {graphqlDataLoader, GraphQLLoaderProps};
+export {dataLoader, Props};
 export default GraphQLLoader;

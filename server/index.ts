@@ -29,6 +29,10 @@ app.get('/', ({}, res) => {
   res.sendFile(path.join(basePath, 'index.html'));
 });
 
+app.get('/db', ({}, res) => {
+  res.json(true);
+});
+
 app.post('/db', async (req, res) => {
   const {connection, query} = req.body;
 

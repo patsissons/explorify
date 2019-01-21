@@ -1,7 +1,9 @@
 import DataLoader, {
+  allDataLoaderTypes,
   DataLoaderType,
-  Props as DataLoaderProps,
+  isDataLoaderEnabled,
+  Props,
 } from './DataLoader';
 
-export {DataLoaderProps, DataLoaderType};
+export {allDataLoaderTypes, DataLoaderType, isDataLoaderEnabled, Props};
 export default DataLoader;

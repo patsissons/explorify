@@ -1,7 +1,4 @@
-import VegaLoader, {
-  dataLoader as vegaLoader,
-  Props as VegaLoaderProps,
-} from './VegaLoader';
+import VegaLoader, {dataLoader, Props} from './VegaLoader';
 
-export {vegaLoader, VegaLoaderProps};
+export {dataLoader, Props};
 export default VegaLoader;

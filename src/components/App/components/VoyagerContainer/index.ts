@@ -1,6 +1,4 @@
-import VoyagerContainer, {
-  Props as VoyagerContainerProps,
-} from './VoyagerContainer';
+import VoyagerContainer, {Props} from './VoyagerContainer';
 
-export {VoyagerContainerProps};
+export {Props};
 export default VoyagerContainer;

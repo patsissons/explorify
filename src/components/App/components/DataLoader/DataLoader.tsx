@@ -5,6 +5,8 @@ import {Modal, FormLayout, TextField} from '@shopify/polaris';
 import {
   DataLoaderFunction,
   DBLoader,
+  isDBLoaderEnabled,
+  isTestLoaderEnabled,
   TestDataLoader,
   VegaLoader,
   GraphQLLoader,
@@ -19,9 +21,14 @@ export enum DataLoaderType {
   Vega = 'Vega (URL)',
 }
 
+export const allDataLoaderTypes = Object.entries<DataLoaderType>(
+  DataLoaderType as any,
+).map(([{}, type]) => type);
+
 export interface Props {
   dismiss(): void;
   loadData(name: string, data: {}[]): void;
+  onError(message: string): void;
   type: DataLoaderType | undefined;
 }
 
@@ -86,7 +93,7 @@ export class DataLoader extends React.PureComponent<ComposedProps, State> {
   }
 
   handleLoadData = async () => {
-    const {loadData, type} = this.props;
+    const {loadData, onError, type} = this.props;
     const {loader, name} = this.state;
 
     try {
@@ -107,6 +114,7 @@ export class DataLoader extends React.PureComponent<ComposedProps, State> {
       this.setState({loading: false});
     } catch (error) {
       this.setState({loading: false});
+      onError(error.message);
     }
   };
 
@@ -117,6 +125,24 @@ export class DataLoader extends React.PureComponent<ComposedProps, State> {
   setName = (name: string) => {
     this.setState({name});
   };
+}
+
+export async function isDataLoaderEnabled(type: DataLoaderType) {
+  try {
+    switch (type) {
+      case DataLoaderType.DB: {
+        const enabled = await isDBLoaderEnabled();
+
+        return enabled;
+      }
+      case DataLoaderType.Test:
+        return isTestLoaderEnabled();
+      default:
+        return true;
+    }
+  } catch (error) {
+    return false;
+  }
 }
 
 export default DataLoader;

@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import env from '@app/env';
 import {DataLoaderFunction, DataLoaderMountedProps} from '../shared';
 
 export interface Props extends DataLoaderMountedProps {}
@@ -29,6 +30,10 @@ export class TestDataLoader extends React.PureComponent<ComposedProps> {
       values,
     };
   };
+}
+
+export function isEnabled() {
+  return Boolean(env.SHOW_TEST_LOADER);
 }
 
 export const data = [{id: 1, title: 'a'}, {id: 2, title: 'b'}];

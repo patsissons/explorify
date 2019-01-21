@@ -5,13 +5,24 @@ import classNames from 'classnames';
 import logo from 'datavoyager/images/logo.png';
 import {Voyager} from 'datavoyager';
 
-import env from '@app/env';
-import {DataLoader, DataLoaderType, VoyagerContainer} from './components';
+import {
+  allDataLoaderTypes,
+  DataLoader,
+  DataLoaderType,
+  isDataLoaderEnabled,
+  VoyagerContainer,
+} from './components';
 
 import './App.css';
 
+interface DataLoaderItem {
+  label: string;
+  onClick(): void;
+}
+
 interface State {
   dataLoaderType?: DataLoaderType;
+  enabledDataLoaderItems?: DataLoaderItem[];
   isDataPaneHidden?: boolean;
   isEncodingPaneHidden?: boolean;
   isNavigationHidden?: boolean;
@@ -23,26 +34,29 @@ interface State {
 export class App extends React.PureComponent<{}, State> {
   state: State = {};
 
-  private readonly dataSourceItems = Object.keys(DataLoaderType)
-    .filter((type) => {
-      if (type === DataLoaderType.Test) {
-        return Boolean(env.SHOW_TEST_LOADER);
-      }
+  async componentDidMount() {
+    const enabledDataLoaderItems = (await Promise.all(
+      allDataLoaderTypes.map(async (type) => {
+        const enabled = await isDataLoaderEnabled(type);
 
-      return true;
-    })
-    .map((key) => {
-      return {
-        label: DataLoaderType[key],
+        return enabled && type;
+      }),
+    ))
+      .filter((type): type is DataLoaderType => Boolean(type))
+      .map((type) => ({
+        label: type,
         onClick: () => {
-          this.showDataLoader(DataLoaderType[key]);
+          this.showDataLoader(type);
         },
-      };
-    });
+      }));
+
+    this.setState({enabledDataLoaderItems});
+  }
 
   render() {
     const {
       dataLoaderType,
+      enabledDataLoaderItems,
       isDataPaneHidden,
       isEncodingPaneHidden,
       isNavigationHidden,
@@ -51,33 +65,35 @@ export class App extends React.PureComponent<{}, State> {
       voyager,
     } = this.state;
 
-    const navigation = voyager && !isNavigationHidden && (
-      <Navigation location="/">
-        <Navigation.Section
-          title="Load Data Source"
-          items={this.dataSourceItems}
-        />
-        <Navigation.Section
-          title="Options"
-          items={[
-            {
-              label: isDataPaneHidden ? 'Show Data Pane' : 'Hide Data Pane',
-              onClick: () => {
-                this.toggleDataPane();
+    const navigation = voyager &&
+      !isNavigationHidden &&
+      enabledDataLoaderItems && (
+        <Navigation location="/">
+          <Navigation.Section
+            title="Load Data Source"
+            items={enabledDataLoaderItems}
+          />
+          <Navigation.Section
+            title="Options"
+            items={[
+              {
+                label: isDataPaneHidden ? 'Show Data Pane' : 'Hide Data Pane',
+                onClick: () => {
+                  this.toggleDataPane();
+                },
               },
-            },
-            {
-              label: isEncodingPaneHidden
-                ? 'Show Encoding Pane'
-                : 'Hide Encoding Pane',
-              onClick: () => {
-                this.toggleEncodingPane();
+              {
+                label: isEncodingPaneHidden
+                  ? 'Show Encoding Pane'
+                  : 'Hide Encoding Pane',
+                onClick: () => {
+                  this.toggleEncodingPane();
+                },
               },
-            },
-          ]}
-        />
-      </Navigation>
-    );
+            ]}
+          />
+        </Navigation>
+      );
 
     const topBar = (
       <TopBar showNavigationToggle onNavigationToggle={this.toggleNavigation} />
@@ -101,6 +117,7 @@ export class App extends React.PureComponent<{}, State> {
           <DataLoader
             dismiss={this.dismissModal}
             loadData={this.loadData}
+            onError={this.onError}
             type={dataLoaderType}
           />
           {toastContent && (
@@ -131,13 +148,21 @@ export class App extends React.PureComponent<{}, State> {
     const {voyager} = this.state;
 
     if (voyager) {
-      voyager.setFilename(name);
-      voyager.updateData({values: data});
+      try {
+        voyager.setFilename(name);
+        voyager.updateData({values: data});
 
-      this.dismissModal();
-      this.dismissNavigation();
-      this.showToast(`Data Loaded: ${name}`);
+        this.dismissModal();
+        this.dismissNavigation();
+        this.showToast(`Data Loaded: ${name}`);
+      } catch (error) {
+        this.onError(error.message);
+      }
     }
+  };
+
+  onError = (message: string) => {
+    this.showToast(message, true);
   };
 
   onVoyagerMounted = (voyager: any) => {

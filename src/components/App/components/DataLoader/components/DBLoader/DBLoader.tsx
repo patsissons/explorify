@@ -3,11 +3,12 @@ import * as React from 'react';
 import {Button, FormLayout, TextField} from '@shopify/polaris';
 import {loader} from 'vega';
 
+import env from '@app/env';
 import {DataLoaderFunction, DataLoaderMountedProps} from '../shared';
 
-export interface Props extends DataLoaderMountedProps {
-  dbProxy?: string;
-}
+const dbProxy = env.DB_PROXY || '';
+
+export interface Props extends DataLoaderMountedProps {}
 
 type ComposedProps = Props;
 
@@ -101,11 +102,13 @@ export class DBLoader extends React.PureComponent<ComposedProps, State> {
   };
 }
 
-export async function dataLoader(
-  connection: string,
-  query: string,
-  dbProxy = '',
-) {
+export async function isEnabled() {
+  const result = await loader().load(`${dbProxy}/db`);
+
+  return JSON.parse(result) as boolean;
+}
+
+export async function dataLoader(connection: string, query: string) {
   const result = await loader().load(`${dbProxy}/db`, {
     body: JSON.stringify({connection, query}),
     headers: {

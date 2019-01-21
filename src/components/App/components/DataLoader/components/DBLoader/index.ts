@@ -1,7 +1,4 @@
-import DBLoader, {
-  dataLoader as dbLoader,
-  Props as DBLoaderProps,
-} from './DBLoader';
+import DBLoader, {dataLoader, isEnabled, Props} from './DBLoader';
 
-export {dbLoader, DBLoaderProps};
+export {dataLoader, isEnabled, Props};
 export default DBLoader;
