@@ -74,6 +74,7 @@
       "import/named": "off",
       "import/no-anonymous-default-export": "off",
       "import/no-named-as-default": "off",
+      "import/order": "off",
       "lines-around-comment": "off",
       "no-empty-pattern": "off",
       "promise/catch-or-return": "off"

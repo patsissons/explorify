@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import logo from 'datavoyager/images/logo.png';
 import {Voyager} from 'datavoyager';
 
+import env from '@app/env';
 import {DataLoader, DataLoaderType, VoyagerContainer} from './components';
 
 import './App.css';
@@ -25,8 +26,7 @@ export class App extends React.PureComponent<{}, State> {
   private readonly dataSourceItems = Object.keys(DataLoaderType)
     .filter((type) => {
       if (type === DataLoaderType.Test) {
-        // eslint-disable-next-line no-process-env
-        return Boolean(process.env.SHOW_TEST_LOADER);
+        return Boolean(env.SHOW_TEST_LOADER);
       }
 
       return true;

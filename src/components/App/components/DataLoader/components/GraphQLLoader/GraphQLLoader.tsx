@@ -4,6 +4,7 @@ import {Button, FormLayout, Select, TextField} from '@shopify/polaris';
 import {GraphQLClient} from 'graphql-request';
 import {graphqlLodash} from 'graphql-lodash';
 
+import env from '@app/env';
 import {DataLoaderFunction, DataLoaderMountedProps} from '../shared';
 import {GraphQLApi} from './types';
 
@@ -141,8 +142,7 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
         ] = [{}],
       } = api;
 
-      // eslint-disable-next-line no-process-env
-      const token = process.env[`${apiName.toUpperCase()}_TOKEN`];
+      const token = env[`${apiName.toUpperCase()}_TOKEN`];
 
       this.setState({
         apiName,
