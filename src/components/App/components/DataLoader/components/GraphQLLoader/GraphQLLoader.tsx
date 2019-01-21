@@ -208,8 +208,13 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
   };
 }
 
+interface PagedData<T = any> {
+  pageInfo: any;
+  nodes: T[];
+}
+
 interface Result<T = any> {
-  values: T[];
+  values: T[] | PagedData<T>;
 }
 
 export function graphQLOperations(query: string) {
@@ -228,7 +233,7 @@ export async function graphQLResult<T = any>(
   query: string,
   operationName: string | undefined,
   endpoint: string,
-  headers: string | undefined,
+  headers: any,
   variables: any,
 ) {
   const {query: transformedQuery, transform} = graphqlLodash(
@@ -237,8 +242,8 @@ export async function graphQLResult<T = any>(
   );
 
   const data = await new GraphQLClient(endpoint, {
-    headers: headers && JSON.parse(headers),
-  }).request(transformedQuery, variables && JSON.parse(variables));
+    headers,
+  }).request(transformedQuery, variables);
 
   return transform<T>(data);
 }
@@ -253,6 +258,10 @@ export async function dataLoader(
     throw new Error('Invalid endpoint');
   }
 
+  const staticHeaders = headers && JSON.parse(headers);
+  const staticVariables = variables && JSON.parse(variables);
+  let dynamicVariables = {...staticVariables};
+
   const operations = graphQLOperations(query);
 
   if (!operations.length) {
@@ -260,18 +269,27 @@ export async function dataLoader(
   }
 
   return (await Promise.all(
-    operations.map((operationName) => {
+    operations.slice(0, 10).map((operationName) => {
       return graphQLResult<Result>(
         query,
         operationName,
         endpoint,
-        headers,
-        variables,
+        staticHeaders,
+        dynamicVariables,
       );
     }),
   )).reduce(
     (values, result) => {
-      return values.concat(result.values);
+      if (Array.isArray(result.values)) {
+        return values.concat(result.values);
+      }
+
+      dynamicVariables = {
+        ...staticVariables,
+        ...result.values.pageInfo,
+      };
+
+      return values.concat(result.values.nodes);
     },
     [] as any[],
   );
