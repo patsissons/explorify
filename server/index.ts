@@ -17,7 +17,7 @@ if (!process.env.NODE_ENV) {
 require('react-scripts-ts/config/env');
 
 const app = express();
-const basePath = path.join(__dirname, '..', 'build');
+const basePath = path.join(__dirname, '..', '..', 'build');
 
 app.set('port', process.env.PORT || 3001);
 

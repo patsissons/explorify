@@ -8,7 +8,7 @@
     "start": "concurrently \"yarn start:client\" \"yarn build:server -w\" \"yarn start:server\"",
     "start:client": "react-scripts-ts start",
     "start:server": "nodemon dist/server/index.js",
-    "server": "node dist/index.js",
+    "server": "node dist/server/index.js",
     "heroku-postbuild": "yarn build:prod",
     "build": "concurrently \"yarn build:client\" \"yarn build:server\"",
     "build:prod": "cross-env BABEL_ENV=production NODE_ENV=production yarn build",
