@@ -26,6 +26,9 @@ interface State {
   isDataPaneHidden?: boolean;
   isEncodingPaneHidden?: boolean;
   isNavigationHidden?: boolean;
+  showDataSourceSelector?: boolean;
+  showFooter?: boolean;
+  showHeader?: boolean;
   toastContent?: string;
   toastIsError?: boolean;
   voyager?: Voyager;
@@ -60,6 +63,9 @@ export class App extends React.PureComponent<{}, State> {
       isDataPaneHidden,
       isEncodingPaneHidden,
       isNavigationHidden,
+      showDataSourceSelector,
+      showFooter,
+      showHeader,
       toastContent,
       toastIsError,
       voyager,
@@ -88,6 +94,26 @@ export class App extends React.PureComponent<{}, State> {
                   : 'Hide Encoding Pane',
                 onClick: () => {
                   this.toggleEncodingPane();
+                },
+              },
+              {
+                label: showHeader ? 'Hide Header' : 'Show Header',
+                onClick: () => {
+                  this.toggleHeader();
+                },
+              },
+              {
+                label: showFooter ? 'Hide Footer' : 'Show Footer',
+                onClick: () => {
+                  this.toggleFooter();
+                },
+              },
+              {
+                label: showDataSourceSelector
+                  ? 'Hide Data Source Selector'
+                  : 'Show Data Source Selector',
+                onClick: () => {
+                  this.toggleDataSourceSelector();
                 },
               },
             ]}
@@ -183,10 +209,37 @@ export class App extends React.PureComponent<{}, State> {
     this.setState({isDataPaneHidden: !isDataPaneHidden});
   };
 
+  toggleDataSourceSelector = () => {
+    const {showDataSourceSelector, voyager} = this.state;
+
+    if (voyager) {
+      voyager.updateConfig({showDataSourceSelector: !showDataSourceSelector});
+      this.setState({showDataSourceSelector: !showDataSourceSelector});
+    }
+  };
+
   toggleEncodingPane = () => {
     const {isEncodingPaneHidden} = this.state;
 
     this.setState({isEncodingPaneHidden: !isEncodingPaneHidden});
+  };
+
+  toggleFooter = () => {
+    const {showFooter, voyager} = this.state;
+
+    if (voyager) {
+      voyager.updateConfig({hideFooter: showFooter});
+      this.setState({showFooter: !showFooter});
+    }
+  };
+
+  toggleHeader = () => {
+    const {showHeader, voyager} = this.state;
+
+    if (voyager) {
+      voyager.updateConfig({hideHeader: showHeader});
+      this.setState({showHeader: !showHeader});
+    }
   };
 
   toggleNavigation = () => {

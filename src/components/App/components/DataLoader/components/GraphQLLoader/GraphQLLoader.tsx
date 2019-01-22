@@ -122,7 +122,13 @@ export class GraphQLLoader extends React.PureComponent<ComposedProps, State> {
 
       this.setState({loading: true});
 
-      const result = await dataLoader(query, endpoint, headers, variables);
+      const result = await graphQLResult(
+        query,
+        endpoint,
+        headers && JSON.parse(headers),
+        variables && JSON.parse(variables),
+        graphQLOperations(query).shift(),
+      );
 
       this.setResult(JSON.stringify(result, null, 2));
     } catch (error) {
@@ -231,10 +237,10 @@ export function graphQLOperations(query: string) {
 
 export async function graphQLResult<T = any>(
   query: string,
-  operationName: string | undefined,
   endpoint: string,
   headers: any,
   variables: any,
+  operationName?: string,
 ) {
   const {query: transformedQuery, transform} = graphqlLodash(
     query,
@@ -253,46 +259,57 @@ export async function dataLoader(
   endpoint: string | undefined,
   headers: string | undefined,
   variables: string | undefined,
+  maxPages = 10,
 ) {
   if (!endpoint) {
     throw new Error('Invalid endpoint');
   }
 
-  const staticHeaders = headers && JSON.parse(headers);
-  const staticVariables = variables && JSON.parse(variables);
-  let dynamicVariables = {...staticVariables};
-
   const operations = graphQLOperations(query);
+  const staticHeaders = headers && JSON.parse(headers);
+  const staticVariables = (variables && JSON.parse(variables)) || {};
+
+  let values: any[] = [];
+  let dynamicVariables = staticVariables;
+  let page = 0;
 
   if (!operations.length) {
     operations.push(undefined);
   }
 
-  return (await Promise.all(
-    operations.slice(0, 10).map((operationName) => {
-      return graphQLResult<Result>(
-        query,
-        operationName,
-        endpoint,
-        staticHeaders,
-        dynamicVariables,
+  while (operations.length) {
+    const operationName = operations.shift();
+
+    const result = await graphQLResult<Result>(
+      query,
+      endpoint,
+      staticHeaders,
+      dynamicVariables,
+      operationName,
+    );
+
+    if (Array.isArray(result.values)) {
+      values = values.concat(result.values);
+      page = 0;
+    } else if (Array.isArray(result.values.nodes) && result.values.pageInfo) {
+      // eslint-disable-next-line prefer-object-spread
+      dynamicVariables = Object.assign(
+        {},
+        staticVariables,
+        result.values.pageInfo,
       );
-    }),
-  )).reduce(
-    (values, result) => {
-      if (Array.isArray(result.values)) {
-        return values.concat(result.values);
+
+      values = values.concat(result.values.nodes);
+
+      if (result.values.pageInfo.repeat && page++ < maxPages) {
+        operations.unshift(operationName);
+
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
+    }
+  }
 
-      dynamicVariables = {
-        ...staticVariables,
-        ...result.values.pageInfo,
-      };
-
-      return values.concat(result.values.nodes);
-    },
-    [] as any[],
-  );
+  return values;
 }
 
 export default GraphQLLoader;

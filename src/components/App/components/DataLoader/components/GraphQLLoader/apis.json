@@ -159,7 +159,7 @@
       {
         "headers": "{\"Authorization\": \"bearer TOKEN\"}",
         "notes": "create a personal access token with scopes: repo",
-        "query": "query MyPullRequests{values:viewer @_(get:\"pullRequests.nodes\"){pullRequests(last:100 orderBy:{field:UPDATED_AT,direction:ASC}states:MERGED){nodes{createdAt mergedAt changedFiles comments @_(get:\"totalCount\"){totalCount}reviews @_(get:\"totalCount\"){totalCount}title repository @_(values:none,join:\"/\"){owner @_(get:\"login\"){login}name}}}}}"
+        "query": "query MyPullRequests($before:String){rateLimit{cost limit nodeCount remaining resetAt}values:viewer @_(get:\"pullRequests\"){pullRequests(last:100 before:$before orderBy:{field:UPDATED_AT,direction:ASC}states:MERGED){pageInfo{before:startCursor repeat:hasPreviousPage}nodes{createdAt mergedAt changedFiles comments @_(get:\"totalCount\"){totalCount}reviews @_(get:\"totalCount\"){totalCount}title repository @_(values:none,join:\"/\"){owner @_(get:\"login\"){login}name}}}}}"
       }
     ],
     "externalDocs": [
