@@ -172,8 +172,7 @@ function dataSourcesForDataset(datasetName: string, dataset: Dataset) {
 
 export const datasets: {[key: string]: Dataset} = {
   vega: {
-    baseUri:
-      'https://raw.githubusercontent.com/vega/vega-datasets/gh-pages/data',
+    baseUri: 'https://raw.githubusercontent.com/vega/vega-datasets/master/data',
     datasetName: 'Vega Datasets',
     sources: {
       airports: 'airports.csv',
